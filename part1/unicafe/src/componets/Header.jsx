@@ -1,5 +1,5 @@
-const Hearder = ({ text }) => {
-  return <h1>{text}</h1>;
+const Hearder = ({ course }) => {
+  return <h1>{course}</h1>;
 };
 
 export default Hearder;
