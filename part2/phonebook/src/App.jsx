@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Requests from './Requests'
+
 const Filter = ({ filter, setFilter }) => {
   return (
     <div>
@@ -37,16 +39,19 @@ const Person = ({ personsToShow }) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    Requests.getAll().then(data => {
+      console.log(data)
+      setPersons(data)
+    })
+  }, [])
+
 
   const checkPersonExist = (name) => {
     return persons.some(person => person.name === name)
@@ -63,8 +68,10 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
       return
     }
+    Requests.create({ name: newName, number: newNumber }).then(returnedPerson => {
+      setPersons(prev => prev.concat(returnedPerson))
+    })
 
-    setPersons(prev => prev.concat({ name: newName, number: newNumber }))
     setNewName('')
     setNewNumber('')
   }
@@ -93,4 +100,3 @@ const App = () => {
 }
 
 export default App
-setFilter
