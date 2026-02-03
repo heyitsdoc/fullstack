@@ -3,7 +3,6 @@ import axios from 'axios'
 
 const api_key = import.meta.env.VITE_WEATHER_KEY
 
-
 const Country = ({ country, weather }) => {
   return (
     <div>
@@ -61,7 +60,6 @@ function App() {
     }
   }, [filteredCountries])
 
- 
   const handleSearch = (event) => {
     const searchTerm = event.target.value.toLowerCase()
 
