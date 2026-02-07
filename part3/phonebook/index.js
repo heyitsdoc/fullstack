@@ -1,6 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors')
+
 const app = express();
+
+
 app.use(morgan(function (tokens, req, res) {
   return [
     tokens.method(req, res),
@@ -11,6 +15,9 @@ app.use(morgan(function (tokens, req, res) {
     JSON.stringify(req.body)
   ].join(' ')
 }));
+
+app.use(cors())
+
 let persons = [
     {
         "id": "1",
@@ -64,6 +71,7 @@ app.delete('/api/persons/:id', (req, res) => {
         res.status(404).end();
     }
 })
+
 app.post('/api/persons', (req, res) => {
     const body = req.body;
     if (!body.name || !body.number) {
