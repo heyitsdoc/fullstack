@@ -78,7 +78,7 @@ const App = () => {
   }
 
   const personsToShow = persons.filter(person =>
-    person.name.toLowerCase().includes(filter.toLowerCase())
+    person.name?.toLowerCase().includes(filter.toLowerCase())
   )
   const handleDelete = (id) => {
     const person = persons.find(p => p.id === id)
