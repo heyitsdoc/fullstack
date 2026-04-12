@@ -106,8 +106,20 @@ const App = () => {
 
     if (checkPersonExist(newName)) {
       // alert(`${newName} is already added to phonebook`)
-      setErrorMessage(`${newName} is already added to phonebook`)
-      setNotificationColor("red")
+       Requests.update(persons.find(p => p.name === newName).id, { name: newName, number: newNumber   }).then(updatedPerson => {
+        setPersons(persons.map(p => p.name === newName ? updatedPerson : p))
+      }).catch(error => {
+        if (error.response?.status === 404) {
+          setErrorMessage(`Information of ${newName} has already been removed from server`)
+          setPersons(persons.filter(p => p.name !== newName))
+        } else {
+          setErrorMessage(`Error updating ${newName}`)
+        }
+        setNotificationColor("red")
+        return
+      })  
+      setErrorMessage(`${newName} is already added to phonebook so the number was updated`)
+      setNotificationColor("yellow")
       return
     }
     Requests.create({ name: newName, number: newNumber }).then(returnedPerson => {

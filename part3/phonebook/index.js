@@ -19,7 +19,8 @@ app.use(morgan(function (tokens, req, res) {
 }));
 
 
-app.post('/api/persons', async (req, res) => {
+
+app.post('/api/persons', async (req, res , next) => { 
     const body = req.body;
 
     if (!body.name || !body.number) {
@@ -39,15 +40,13 @@ app.post('/api/persons', async (req, res) => {
 
     person.save().then(savedPerson => {
         res.json(savedPerson);
-    }).catch(err => {
-        res.status(500).json({ error: 'Failed to save to database' });
-    });
+    }).catch(error => next(error))
 });
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res , next) => {
     Phonebook.find({}).then(result => {
         res.json(result); // No need to loop and push to a manual array
-    });
+    }).catch(error => next(error))
 });
 
 // GET endpoint for info
@@ -61,15 +60,47 @@ app.get('/info', (req, res) => {
 });
 
 // DELETE endpoint to remove a person by ID
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res , next) => {
     Phonebook.findByIdAndDelete(req.params.id)
         .then(result => {
             res.status(204).end();
-        })
-        .catch(error => {
-            res.status(400).send({ error: 'malformatted id' });
-        });
+        }).catch(error => next(error))
 });
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
+
+  const person = {
+    name: name,
+    number: number,
+  }
+
+  Phonebook.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
+
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
+
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
