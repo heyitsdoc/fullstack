@@ -1,12 +1,10 @@
 require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
-const cors = require('cors')
 const Phonebook = require('./mongo.js');
 
 const app = express();
 app.use(express.json());
-app.use(cors())
 app.use(morgan(function (tokens, req, res) {
     return [
         tokens.method(req, res),
@@ -17,7 +15,7 @@ app.use(morgan(function (tokens, req, res) {
         JSON.stringify(req.body)
     ].join(' ')
 }));
-
+app.use(express.static('dist'))
 
 
 app.post('/api/persons', async (req, res , next) => { 
