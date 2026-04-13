@@ -60,14 +60,14 @@ const App = () => {
     })
   }, [])
 
-  const Notification = ({ message , notificationColor}) => {
+  const Notification = ({ message, notificationColor }) => {
     if (message === null) {
       return null
     }
 
     return (
-      <div className="error" style={{color: notificationColor}}>
-      {message}
+      <div className="error" style={{ color: notificationColor }}>
+        {message}
       </div>
     )
   }
@@ -106,7 +106,7 @@ const App = () => {
 
     if (checkPersonExist(newName)) {
       // alert(`${newName} is already added to phonebook`)
-       Requests.update(persons.find(p => p.name === newName).id, { name: newName, number: newNumber   }).then(updatedPerson => {
+      Requests.update(persons.find(p => p.name === newName).id, { name: newName, number: newNumber }).then(updatedPerson => {
         setPersons(persons.map(p => p.name === newName ? updatedPerson : p))
       }).catch(error => {
         if (error.response?.status === 404) {
@@ -117,13 +117,17 @@ const App = () => {
         }
         setNotificationColor("red")
         return
-      })  
+      })
       setErrorMessage(`${newName} is already added to phonebook so the number was updated`)
       setNotificationColor("yellow")
       return
     }
     Requests.create({ name: newName, number: newNumber }).then(returnedPerson => {
       setPersons(prev => prev.concat(returnedPerson))
+    }).catch(error => {
+      const message = error.response?.data?.error || error.message
+      setErrorMessage(`${message}`)
+      setNotificationColor("red")
     })
 
     setErrorMessage("Added " + newName)
