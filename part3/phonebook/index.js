@@ -49,6 +49,16 @@ app.get('/api/persons', (req, res , next) => {
     }).catch(error => next(error))
 });
 
+app.get('/api/persons/:id', (req, res , next) => {
+    Phonebook.findById(req.params.id).then(result => {
+        if (result) {
+            res.json(result);
+        } else {
+            res.status(404).end();
+        }
+    }).catch(error => next(error))
+}); 
+
 // GET endpoint for info
 app.get('/info', (req, res) => {
     Phonebook.countDocuments({}).then(count => {
